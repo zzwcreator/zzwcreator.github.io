@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>win10+ubuntu18卸载</title>
+      <link href="/2023/11/22/win10+ubuntu18%E5%8D%B8%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85/"/>
+      <url>/2023/11/22/win10+ubuntu18%E5%8D%B8%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85/</url>
+      
+        <content type="html"><![CDATA[<h1 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h1><h2 id="win10-与-ubuntu-关于-EFI-的两种模式"><a href="#win10-与-ubuntu-关于-EFI-的两种模式" class="headerlink" title="win10 与 ubuntu 关于 EFI 的两种模式"></a>win10 与 ubuntu 关于 EFI 的两种模式</h2><h3 id="win10-与-ubuntu-各自有单独的-EFI-分区"><a href="#win10-与-ubuntu-各自有单独的-EFI-分区" class="headerlink" title="win10 与 ubuntu 各自有单独的 EFI 分区"></a>win10 与 ubuntu 各自有单独的 EFI 分区</h3><h3 id="win10-与-ubuntu-共用-EFI-分区"><a href="#win10-与-ubuntu-共用-EFI-分区" class="headerlink" title="win10 与 ubuntu 共用 EFI 分区"></a>win10 与 ubuntu 共用 EFI 分区</h3><h2 id="删除-win10-的-EFI-中的-ubuntu-文件夹（十分重要，否则开机你仍会进入grub引导，无法进入系统）"><a href="#删除-win10-的-EFI-中的-ubuntu-文件夹（十分重要，否则开机你仍会进入grub引导，无法进入系统）" class="headerlink" title="删除 win10 的 EFI 中的 ubuntu 文件夹（十分重要，否则开机你仍会进入grub引导，无法进入系统）"></a>删除 win10 的 EFI 中的 ubuntu 文件夹（十分重要，否则开机你仍会进入grub引导，无法进入系统）</h2><p>EFI 分区 没有盘符我们没法访问，所以要为其分配盘符：</p><p>按 <code>WIN + R</code> 键 输入 <code>diskpart</code> 进入磁盘管理(cmd版)，然后输入 <code>list disk</code> 查看所有磁盘</p><p>我的 win10 的 EFI 在磁盘 0 ，所以输入 <code>select disk 0</code> 进入 磁盘 0，然后再输入 <code>list partition</code> 查看当前磁盘所有分区</p><p>100 M 的那个即为 EFI 系统分区，输入 <code>select partition 1</code> 选择分区，再输入 <code>assign letter=p</code> 为其分配一个 p 盘符(不区分大小写)，<strong>注意不要关闭此窗口</strong>，后面有用</p><p>此时我们能看到但无法访问，因为没有对应权限，这里我们使用管理员身份打开记事本，用记事本访问盘 p，可以看到 EFI 文件，进入<strong>找到 ubuntu 删除</strong>即可</p><p>然后回到刚才的窗口，输入 <code>remove letter=p</code> 移除盘符 p</p><p>至此，此部分结束</p><h3 id="删除-ubuntu-相关的分区"><a href="#删除-ubuntu-相关的分区" class="headerlink" title="删除 ubuntu 相关的分区"></a>删除 ubuntu 相关的分区</h3><p>注意删除 ubuntu 的分区时<strong>不要动 win10 的 EFI 分区</strong>，无论是否共用 EFI 分区</p><p>以 swap 分区为例，在 win10 磁盘管理选中分区，右键选择删除卷</p><h2 id="完成卸载，结束"><a href="#完成卸载，结束" class="headerlink" title="完成卸载，结束"></a>完成卸载，结束</h2><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><ol><li><p>新建一块空闲磁盘空间（任意位置），如果电脑有两个磁盘，则在win的efi启动文件所在的磁盘新建200mb的空间用于存放ubuntu的efi启动。</p></li><li><p>准备好ubuntu的烧录盘。</p></li><li><p>开机进入BIOS，按照顺序安装。</p></li><li><p>更新和其他软件看个人喜好。</p></li><li><p>安装类型选择其他。</p></li><li><p>找到空闲磁盘进行手动分区。</p><p>1）efi分区。如果是单硬盘，在唯一的一个空闲分区上添加，大小200M，主分区，空间起始位置，用于efi 。如果是双硬盘，在那个大小为200M的空闲分区上添加，大小200M，主分区，空间起始位置，用于efi 。</p><p>2）swap分区。在空闲分区上添加，大小为你电脑的物理内存大小，逻辑分区，空间起始位置，用于”swap”或”交换空间”</p><p>3）主分区。在空闲分区上添加，大小为剩下的所有空间，主分区，空间起始位置，用于”ext4日志文件系统”，挂载点为”&#x2F;“</p></li></ol><p>7.选择安装引导启动器的设备找到刚才用于efi分区的设备号，安装引导启动器的设就选择这个设备号。</p><p>8.最后点击现在安装等待安装完成</p><h2 id="apt更换为国内软件源"><a href="#apt更换为国内软件源" class="headerlink" title="apt更换为国内软件源"></a>apt更换为国内软件源</h2><h4 id="1-备份软件源配置文件sources-list"><a href="#1-备份软件源配置文件sources-list" class="headerlink" title="1.备份软件源配置文件sources.list"></a>1.备份软件源配置文件sources.list</h4><pre><code>cp /etc/apt/sources.list /etc/apt/sources.list.bak</code></pre><h4 id="2-更换源"><a href="#2-更换源" class="headerlink" title="2.更换源"></a>2.更换源</h4><pre><code>sudo gedit /etc/apt/sources.list</code></pre><pre><code>    # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse    # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse    # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse    # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse    deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse    # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse         # 预发布软件源，不建议启用    # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse    # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse</code></pre><h4 id="3-执行更新"><a href="#3-执行更新" class="headerlink" title="3.执行更新"></a>3.执行更新</h4><pre><code> sudo apt-get update</code></pre><h2 id="安装vim，更改电脑默认启动顺序"><a href="#安装vim，更改电脑默认启动顺序" class="headerlink" title="安装vim，更改电脑默认启动顺序"></a>安装vim，更改电脑默认启动顺序</h2><pre><code>sudo apt install vim</code></pre><pre><code>sudo gedit /etc/default/grubsudo update-grub</code></pre><h2 id="安装输入法-打汉字"><a href="#安装输入法-打汉字" class="headerlink" title="安装输入法 打汉字"></a>安装输入法 打汉字</h2><p>1.在设置中的区域和语言中，安装Chinese(simplified)</p><p>2.ibus输入法安装</p><pre><code>sudo apt-get install ibus ibus-clutter ibus-gtk ibus-gtk3 ibus-qt4#ibus框架安装完成后，再切换到ibus框架#切换到ibus框架之后，再接着安装中文拼音引擎sudo apt-get install ibus-pinyin然后调出 IBus Preference 窗口来添加该中文拼音输入法sudo ibus-setup#在图形界面中add pinyin#在设置中的区域和语言中添加中文拼音输入法#重启 完成！！！！！！！！！！！！</code></pre><h2 id="安装QQ-VSCODE-EDGE-Anconda"><a href="#安装QQ-VSCODE-EDGE-Anconda" class="headerlink" title="安装QQ VSCODE EDGE Anconda"></a>安装QQ VSCODE EDGE Anconda</h2><p>1.下载qq官网deb文件：</p><pre><code>sudo dpkg -i ***.deb</code></pre><p>2.下载vscode官网deb文件：</p><pre><code>sudo dpkg -i ***.deb#报错，需要依赖libvulkan1sudo api install libvulkan1#重新执行sudo dpkg -i ***.deb</code></pre><p>3.下载edge官网deb文件：</p><pre><code>sudo dpkg -i ***.deb</code></pre><p>4.下载ancopnda官网sh文件，注意不要安装在ubuntu根目录下面：</p><pre><code>#官网下载sh文件sudo bash Anaconda***.sh#安装过程选择yes，重新打开终端即可看到base环境#更换pip源 conda源</code></pre>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>vps搭建</title>
+      <link href="/2023/08/25/vps%E6%90%AD%E5%BB%BA/"/>
+      <url>/2023/08/25/vps%E6%90%AD%E5%BB%BA/</url>
+      
+        <content type="html"><![CDATA[<p>购买域名 vps 在cloudflare上dns解析 ssl改为严格</p><h2 id="安装x-ui"><a href="#安装x-ui" class="headerlink" title="安装x-ui"></a>安装x-ui</h2><pre><code>apt update -y          # Debian/Ubuntu 命令apt install -y curl socat    #Debian/Ubuntu 命令bash &lt;(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh) #X-ui面板安装</code></pre><ol><li>终端输入x-ui，申请证书，在面板设置填写ssl证书公钥文件路径和密钥文件路径</li><li>入站列表填写以下信息</li></ol><p><img src="/2023/08/25/vps%E6%90%AD%E5%BB%BA/vps.png" alt="image-20230824203210227"></p><h2 id="linux卸载v2raya"><a href="#linux卸载v2raya" class="headerlink" title="linux卸载v2raya"></a>linux卸载v2raya</h2><pre><code>#停用并卸载服务（systemd）：systemctl stop v2raysystemctl disable v2ray#删除文件rm -rf /etc/v2ray/*  #(配置文件)rm -rf /usr/bin/v2ray/*  #(程序)rm -rf /var/log/v2ray/*  #(日志)rm -rf /lib/systemd/system/v2ray.service  #(systemd 启动项)rm -rf /etc/init.d/v2ray  #(sysv 启动项)</code></pre><h2 id="linux安装v2raya"><a href="#linux安装v2raya" class="headerlink" title="linux安装v2raya"></a>linux安装v2raya</h2><h3 id="1-安装docker"><a href="#1-安装docker" class="headerlink" title="1.安装docker"></a>1.安装docker</h3><p>自行搜索教程</p><h3 id="2-获取v2ray镜像"><a href="#2-获取v2ray镜像" class="headerlink" title="2.获取v2ray镜像"></a>2.获取v2ray镜像</h3><pre><code>docker pull mzz2017/v2raya</code></pre><p>如果有正在运行的v2ray</p><pre><code>docker container stop v2rayadocker container rm v2raya</code></pre><p>运行 v2rayA:</p><pre><code># run v2rayadocker run -d \  --restart=always \  --privileged \  --network=host \  --name v2raya \  -e V2RAYA_LOG_FILE=/tmp/v2raya.log \  -e V2RAYA_V2RAY_BIN=/usr/local/bin/v2ray \  # V2RAYA_V2RAY_BIN 的值应当是 /usr/local/bin/v2ray  # 或 /usr/local/bin/xray  # 默认的核心是 xray  -e V2RAYA_NFTABLES_SUPPORT=off \  # 如果你的宿主系统使用 nftables  # 那么就把 V2RAYA_NFTABLES_SUPPORT 设置为 on  # 否则会遇到 iptables 找不到 table 的故障  -v /lib/modules:/lib/modules:ro \  -v /etc/resolv.conf:/etc/resolv.conf \  -v /etc/v2raya:/etc/v2raya \  mzz2017/v2raya</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> vps搭建 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Linux命令</title>
+      <link href="/2023/07/28/Linux%E5%91%BD%E4%BB%A4/"/>
+      <url>/2023/07/28/Linux%E5%91%BD%E4%BB%A4/</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-新建用户"><a href="#1-新建用户" class="headerlink" title="1.新建用户"></a>1.新建用户</h2><h5 id="新建名字为name的用户"><a href="#新建名字为name的用户" class="headerlink" title="新建名字为name的用户"></a>新建名字为name的用户</h5><p><code>sudo useradd name -m -s /bin/bash -d /home***/name</code></p><h5 id="重置用户密码"><a href="#重置用户密码" class="headerlink" title="重置用户密码"></a>重置用户密码</h5><p><code>sudo passwd name</code></p><h5 id="给名字为name的用户添加sudo权限"><a href="#给名字为name的用户添加sudo权限" class="headerlink" title="给名字为name的用户添加sudo权限"></a>给名字为name的用户添加sudo权限</h5><pre><code>sudo vim /etc/sudoersname ALL=(ALL:ALL) ALL</code></pre><h5 id="删除名字为name的用户"><a href="#删除名字为name的用户" class="headerlink" title="删除名字为name的用户"></a>删除名字为name的用户</h5><p><code>sudo userdel -r name</code></p><h2 id="2-修改密码"><a href="#2-修改密码" class="headerlink" title="2.修改密码"></a>2.修改密码</h2><p><code>passwd ZZW</code></p><h2 id="3-Windows和linux文件互传命令"><a href="#3-Windows和linux文件互传命令" class="headerlink" title="3.Windows和linux文件互传命令"></a>3.Windows和linux文件互传命令</h2><pre><code>scp C:\Users\sss\Desktop\MyWords.war root@114.116.225.111:/usrwebapps#当目标文件夹Permission denied时sudo chmod 777 /home/users3</code></pre><h2 id="4-查看端口是否开放以及开放端口"><a href="#4-查看端口是否开放以及开放端口" class="headerlink" title="4.查看端口是否开放以及开放端口"></a>4.查看端口是否开放以及开放端口</h2><h5 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h5><p><code>firewall-cmd --query-port=6379/tcp</code></p><h5 id="开放端口"><a href="#开放端口" class="headerlink" title="开放端口"></a>开放端口</h5><p><code>firewall-cmd --add-port=8888/tcp --permanent</code></p><h5 id="移除端口"><a href="#移除端口" class="headerlink" title="移除端口"></a>移除端口</h5><p><code>firewall-cmd --permanent --remove-port=123/tcp</code></p><h2 id="5-安装x-ui适用于debian系统"><a href="#5-安装x-ui适用于debian系统" class="headerlink" title="5.安装x-ui适用于debian系统"></a>5.安装x-ui适用于debian系统</h2><pre><code>apt update -yapt install -y curl socatbash &lt;(curl -Ls https://raw.githubusercontent.com/vaxilu/xui/master/install.sh) </code></pre><h2 id="6-磁盘挂载"><a href="#6-磁盘挂载" class="headerlink" title="6.磁盘挂载"></a>6.磁盘挂载</h2><pre><code>#在服务器中接上电源线和数据线后df -h#未看到新磁盘，需要挂载lsblk#看到新磁盘名字，格式化新磁盘，并新建磁盘需要挂载的目录sudo mkfs -t ext4 /dev/sdbmkdir /home/users3#挂载sudo mount /dev/sdb /home/users3#查看是否挂载成功df -h#永久挂载查看新磁盘的UUID,sda为新磁盘名sudo blkid /dev/sda#修改配置文件信息sudo vim /etc/fstab#添加UUID=ef768810-a346-4285-8ba0-d1b8a619e97d /home/users3 ext4 defaults 0 0#保存推出</code></pre><h2 id="7-vscode远程连接服务器不能跳转函数解决"><a href="#7-vscode远程连接服务器不能跳转函数解决" class="headerlink" title="7.vscode远程连接服务器不能跳转函数解决"></a>7.vscode远程连接服务器不能跳转函数解决</h2><p>安装python扩展，在python扩展设置中搜索jedi，将选项改为pylance</p><h2 id="8-linux-下查看指定端口、所有端口、某个服务占用情况"><a href="#8-linux-下查看指定端口、所有端口、某个服务占用情况" class="headerlink" title="8.linux 下查看指定端口、所有端口、某个服务占用情况"></a>8.linux 下查看指定端口、所有端口、某个服务占用情况</h2><pre><code>#查看端口8080占用情况netstat -tunlp |grep 8080#查看服务器所有端口netstat -ntlp#查看某进程端口占用，例Tomcatps -ef |grep tomcat</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> work </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>girl</title>
+      <link href="/2023/07/26/girl/"/>
+      <url>/2023/07/26/girl/</url>
+      
+        <content type="html"><![CDATA[<h2 id="美丽的仙女"><a href="#美丽的仙女" class="headerlink" title="美丽的仙女"></a>美丽的仙女</h2><p><img src="/2023/07/26/girl/1.jpg" alt="ch1"><br><img src="/2023/07/26/girl/2.jpg" alt="ch1"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> girl </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> girl </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/2023/07/25/hello-world/"/>
+      <url>/2023/07/25/hello-world/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class=" language-bash"><code class="language-bash">$ hexo new <span class="token string">"My New Post"</span></code></pre><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class=" language-bash"><code class="language-bash">$ hexo server</code></pre><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class=" language-bash"><code class="language-bash">$ hexo generate</code></pre><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class=" language-bash"><code class="language-bash">$ hexo deploy</code></pre><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+  
+  
+</search>
